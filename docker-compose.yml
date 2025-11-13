@@ -1,0 +1,44 @@
+version: '3.9'
+
+services:
+  db:                         # service name (логическое имя сервиса)
+    image: postgres:17        # Docker image: postgres версия 17
+    environment:              # переменные окружения передаются в контейнер
+      POSTGRES_USER: ${POSTGRES_USER}      # пользователь, создаётся при initdb (только при пустом томе)
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}          # имя создаваемой базы (при initdb)
+    ports:
+      - "5433:5432" #- "${POSTGRES_PORT}:5432"            # проброс hostPort:containerPort (левое — на хосте, правое — в контейнере)
+    volumes:
+      - db_data:/var/lib/postgresql/data   # named volume: хранит данные БД между перезапусками
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 2s
+      timeout: 2s
+      retries: 20
+
+  migrate:
+    image: migrate/migrate:latest
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./migrations:/migrations
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+    entrypoint: ["sh", "-c", "migrate -path=/migrations -database \"$DATABASE_URL\" up || true"]
+
+  app:
+    build: .
+    depends_on:
+      - migrate
+      - db
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      APP_PORT: ${APP_PORT}
+    ports:
+      - "${APP_PORT}:8080"
+    command: ["/app/prs"]
+
+volumes:
+  db_data:
