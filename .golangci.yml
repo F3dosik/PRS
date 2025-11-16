@@ -1,0 +1,9 @@
+run:
+  timeout: 5m
+linters:
+  enable:
+    - govet          # стандартные проверки
+    - errcheck       # проверка ошибок возврата
+    - staticcheck    # улучшенные проверки на баги
+    - gosimple       # упрощение кода
+    - gocyclo        # проверка сложности функций

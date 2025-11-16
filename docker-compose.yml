@@ -8,7 +8,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}          # имя создаваемой базы (при initdb)
     ports:
-      - "5433:5432" #- "${POSTGRES_PORT}:5432"            # проброс hostPort:containerPort (левое — на хосте, правое — в контейнере)
+      - "${POSTGRES_PORT}:5432"            # проброс hostPort:containerPort (левое — на хосте, правое — в контейнере)
     volumes:
       - db_data:/var/lib/postgresql/data   # named volume: хранит данные БД между перезапусками
     healthcheck:
@@ -26,7 +26,7 @@ services:
       - ./migrations:/migrations
     environment:
       DATABASE_URL: ${DATABASE_URL}
-    entrypoint: ["sh", "-c", "migrate -path=/migrations -database \"$DATABASE_URL\" up || true"]
+    entrypoint: ["sh", "-c", "migrate -path=/migrations -database \"$DATABASE_URL\" up || echo 'Migration failed'"]
 
   app:
     build: .
