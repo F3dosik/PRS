@@ -93,7 +93,12 @@ func (s *Storage) GetTeam(ctx context.Context, teamName string) (*api.Team, erro
 	if err != nil {
 		return nil, fmt.Errorf("query team members: %w", err)
 	}
-	defer rows.Close()
+
+	defer func() {
+		if closeErr := rows.Close(); closeErr != nil && err == nil {
+			err = fmt.Errorf("close rows: %w", closeErr)
+		}
+	}()
 
 	for rows.Next() {
 		var member api.TeamMember
@@ -192,7 +197,12 @@ func (s *Storage) PullRequestCreate(ctx context.Context, prID, authorID uuid.UUI
 	if err != nil {
 		return nil, fmt.Errorf("query reviewers: %w", err)
 	}
-	defer rows.Close()
+
+	defer func() {
+		if closeErr := rows.Close(); closeErr != nil && err == nil {
+			err = fmt.Errorf("close rows: %w", closeErr)
+		}
+	}()
 
 	var reviewers []uuid.UUID
 	for rows.Next() {
@@ -412,7 +422,12 @@ func (s *Storage) GetReview(ctx context.Context, userID uuid.UUID) (*api.GetRevi
 	if err != nil {
 		return nil, fmt.Errorf("query pull_request: %w", err)
 	}
-	defer rows.Close()
+
+	defer func() {
+		if closeErr := rows.Close(); closeErr != nil && err == nil {
+			err = fmt.Errorf("close rows: %w", closeErr)
+		}
+	}()
 
 	var prs []api.PullRequestShort
 	for rows.Next() {
@@ -463,7 +478,12 @@ func (s *Storage) GetStats(ctx context.Context) (*api.StatsResponse, error) {
 	if err != nil {
 		return nil, fmt.Errorf("query review assignments: %w", err)
 	}
-	defer rows.Close()
+	
+	defer func() {
+		if closeErr := rows.Close(); closeErr != nil && err == nil {
+			err = fmt.Errorf("close rows: %w", closeErr)
+		}
+	}()
 
 	for rows.Next() {
 		var userName string

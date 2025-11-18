@@ -2,7 +2,7 @@
 APP_NAME=prs
 APP_PORT=8080
 
-.PHONY: build up down logs migrate
+.PHONY: build up down logs lint migrate 
 
 # Собираем бинарь внутри контейнера builder
 build:
@@ -23,6 +23,10 @@ clean:
 # Логи всех сервисов
 logs:
 	docker-compose logs -f
+
+# Линтер 
+lint:
+	docker-compose run --rm lint
 
 # Применение миграций вручную (если нужно)
 migrate:

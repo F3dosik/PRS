@@ -1,9 +1,25 @@
+version: "2" 
 run:
   timeout: 5m
 linters:
+  disable-all: true
   enable:
-    - govet          # стандартные проверки
-    - errcheck       # проверка ошибок возврата
-    - staticcheck    # улучшенные проверки на баги
-    - gosimple       # упрощение кода
-    - gocyclo        # проверка сложности функций
+    # Обязательные для любого проекта
+    - govet                    # Стандартные проверки
+    - errcheck                 # Проверка обработки ошибок
+    - staticcheck             # Статический анализ (включает simple, unused)
+    - ineffassign             # Неэффективные присваивания
+    
+    # Качество кода
+    - gosec                   # Безопасность
+    - gocritic               # Критика кода
+    - bodyclose              # Проверка закрытия HTTP body
+    - sqlclosecheck          # Проверка закрытия SQL rows/transactions
+    
+    # Стиль кода
+    - gocyclo                # Сложность функций
+    - nestif                 # Вложенные if
+    
+    # Для работы с БД
+    - rowserrcheck           # Проверка ошибок в rows.Scan
+    - contextcheck           # Проверка передачи context

@@ -39,6 +39,13 @@ services:
     ports:
       - "${APP_PORT}:8080"
     command: ["/app/prs"]
+      
+  lint:
+    image: golangci/golangci-lint:latest
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: golangci-lint run ./...
 
 volumes:
   db_data:

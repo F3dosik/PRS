@@ -72,8 +72,12 @@ func (s *Server) Run() error {
 	)
 
 	srv := &http.Server{
-		Addr:    s.config.Port,
-		Handler: s.router,
+		Addr:              s.config.Port,
+		Handler:           s.router,
+		ReadHeaderTimeout: 2 * time.Second,
+		ReadTimeout:       5 * time.Second,
+		WriteTimeout:      10 * time.Second,
+		IdleTimeout:       30 * time.Second,
 	}
 
 	go func() {
